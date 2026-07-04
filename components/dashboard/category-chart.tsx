@@ -38,7 +38,7 @@ export function CategoryChart({ data }: { data: { name: string; value: number }[
               color: "var(--color-popover-foreground)",
               fontSize: 13,
             }}
-            formatter={(value: number, name) => [formatINR(value), name]}
+            formatter={(value: any, name: any) => [formatINR(Number(value)), name]}
           />
         </PieChart>
       </ResponsiveContainer>

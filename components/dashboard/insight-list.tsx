@@ -1,5 +1,5 @@
 import { Sparkles, TrendingUp, TriangleAlert, Info } from "lucide-react"
-import { aiInsights, type Insight } from "@/lib/data"
+import { type Insight } from "@/lib/data"
 import { cn } from "@/lib/utils"
 
 const toneMap: Record<Insight["tone"], { icon: typeof Info; className: string }> = {
@@ -8,8 +8,8 @@ const toneMap: Record<Insight["tone"], { icon: typeof Info; className: string }>
   neutral: { icon: Info, className: "text-accent bg-accent/12" },
 }
 
-export function InsightList({ limit }: { limit?: number }) {
-  const items = limit ? aiInsights.slice(0, limit) : aiInsights
+export function InsightList({ insights, limit }: { insights: Insight[]; limit?: number }) {
+  const items = limit ? insights.slice(0, limit) : insights
   return (
     <div className="flex flex-col gap-3">
       {items.map((insight) => {
