@@ -44,7 +44,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Form panel */}
-      <div className="flex flex-col">
+      <div className="relative flex flex-col">
+        <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
+        <div className="pointer-events-none absolute inset-0 bg-radial-glow opacity-50" />
         <div className="flex items-center justify-between p-6 lg:hidden">
           <Link href="/">
             <Logo />
@@ -53,8 +55,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Back to home
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
-          <div className="w-full max-w-sm">{children}</div>
+        <div className="relative flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+          <div className="w-full max-w-md">{children}</div>
         </div>
       </div>
     </div>
