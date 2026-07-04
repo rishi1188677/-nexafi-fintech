@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 const titles: Record<string, string> = {
   '/dashboard': 'Overview',
   '/transactions': 'Transactions',
-  '/dashboard/budgets': 'Budgets',
+  '/budgets': 'Budgets',
   '/dashboard/goals': 'Goals',
   '/dashboard/insights': 'Insights',
   '/dashboard/assistant': 'AI Assistant',

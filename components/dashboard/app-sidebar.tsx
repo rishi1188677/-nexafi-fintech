@@ -28,7 +28,7 @@ import {
 const mainNav = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
-  { href: '/dashboard/budgets', label: 'Budgets', icon: Wallet },
+  { href: '/budgets', label: 'Budgets', icon: Wallet },
   { href: '/dashboard/goals', label: 'Goals', icon: Target },
   { href: '/dashboard/insights', label: 'Insights', icon: LineChart },
   { href: '/dashboard/assistant', label: 'AI Assistant', icon: Sparkles },
