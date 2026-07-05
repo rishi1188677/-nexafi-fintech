@@ -9,6 +9,9 @@ import {
   CheckCircle2,
   Calendar,
   IndianRupee,
+  MoreHorizontal,
+  Edit,
+  Trash,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -16,6 +19,15 @@ import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { CreateGoalDialog } from './create-goal-dialog'
 import { AddContributionDialog } from './add-contribution-dialog'
+import { EditGoalDialog } from './edit-goal-dialog'
+import { DeleteGoalDialog } from './delete-goal-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
 import { formatINR, formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +47,10 @@ export function GoalsClient({ userId }: { userId: string }) {
   const [goals, setGoals] = React.useState<DBGoal[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+
+  // Dialog states
+  const [editingGoal, setEditingGoal] = React.useState<DBGoal | null>(null)
+  const [deletingGoal, setDeletingGoal] = React.useState<DBGoal | null>(null)
 
   const fetchGoals = React.useCallback(async () => {
     setLoading(true)
@@ -221,17 +237,49 @@ export function GoalsClient({ userId }: { userId: string }) {
 
                   {/* Header */}
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-foreground truncate max-w-[70%]">
+                    <h3 className="font-semibold text-foreground truncate max-w-[55%]">
                       {goal.title}
                     </h3>
-                    <span className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border",
-                      isCompleted
-                        ? "bg-primary/10 text-primary border-primary/20"
-                        : "bg-muted text-muted-foreground border-border/40"
-                    )}>
-                      {isCompleted ? 'Completed' : 'Active'}
-                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className={cn(
+                        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border",
+                        isCompleted
+                          ? "bg-primary/10 text-primary border-primary/20"
+                          : "bg-muted text-muted-foreground border-border/40"
+                      )}>
+                        {isCompleted ? 'Completed' : 'Active'}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              className="hover:bg-muted/40 text-muted-foreground hover:text-foreground rounded-md h-6 w-6"
+                            >
+                              <MoreHorizontal className="size-3.5" />
+                            </Button>
+                          }
+                        />
+                        <DropdownMenuContent className="w-32 bg-card border border-border/80 text-foreground" align="end">
+                          <DropdownMenuItem
+                            onClick={() => setEditingGoal(goal)}
+                            className="cursor-pointer gap-2"
+                          >
+                            <Edit className="size-3.5 text-muted-foreground" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-border/60" />
+                          <DropdownMenuItem
+                            onClick={() => setDeletingGoal(goal)}
+                            className="cursor-pointer gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+                          >
+                            <Trash className="size-3.5" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
 
                   {/* Progress Indicator */}
@@ -314,6 +362,22 @@ export function GoalsClient({ userId }: { userId: string }) {
           </div>
         </div>
       )}
+
+      {/* Edit & Delete Dialogs */}
+      <EditGoalDialog
+        goal={editingGoal}
+        open={!!editingGoal}
+        onOpenChange={(open) => { if (!open) setEditingGoal(null) }}
+        userId={userId}
+        onSuccess={fetchGoals}
+      />
+      <DeleteGoalDialog
+        goal={deletingGoal}
+        open={!!deletingGoal}
+        onOpenChange={(open) => { if (!open) setDeletingGoal(null) }}
+        userId={userId}
+        onSuccess={fetchGoals}
+      />
     </div>
   )
 }

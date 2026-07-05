@@ -9,6 +9,9 @@ import {
   Sparkles,
   ArrowRight,
   ChevronRight,
+  MoreHorizontal,
+  Edit,
+  Trash,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -16,6 +19,15 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { CreateBudgetDialog } from './create-budget-dialog'
+import { EditBudgetDialog } from './edit-budget-dialog'
+import { DeleteBudgetDialog } from './delete-budget-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
 import { categories, type CategoryId } from '@/lib/data'
 import { formatINR } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -49,6 +61,10 @@ export function BudgetsClient({ userId }: { userId: string }) {
   const [transactions, setTransactions] = React.useState<DBTransaction[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+
+  // Dialog states
+  const [editingBudget, setEditingBudget] = React.useState<DBBudget | null>(null)
+  const [deletingBudget, setDeletingBudget] = React.useState<DBBudget | null>(null)
 
   // Current selected month: default to current year-month (e.g. "2026-07")
   const [selectedMonth, setSelectedMonth] = React.useState<string>(() => {
@@ -312,9 +328,41 @@ export function BudgetsClient({ userId }: { userId: string }) {
                       <IconComponent className="size-3.5" />
                       {cat.label}
                     </span>
-                    <span className="text-xs font-medium text-muted-foreground uppercase">
-                      {formattedMonthDisplay.split(' ')[0]}
-                    </span>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <span className="text-xs font-medium uppercase">
+                        {formattedMonthDisplay.split(' ')[0]}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              className="hover:bg-muted/40 text-muted-foreground hover:text-foreground rounded-md h-6 w-6"
+                            >
+                              <MoreHorizontal className="size-3.5" />
+                            </Button>
+                          }
+                        />
+                        <DropdownMenuContent className="w-32 bg-card border border-border/80 text-foreground" align="end">
+                          <DropdownMenuItem
+                            onClick={() => setEditingBudget(budget)}
+                            className="cursor-pointer gap-2"
+                          >
+                            <Edit className="size-3.5 text-muted-foreground" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-border/60" />
+                          <DropdownMenuItem
+                            onClick={() => setDeletingBudget(budget)}
+                            className="cursor-pointer gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+                          >
+                            <Trash className="size-3.5" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
 
                   {/* Amount Details */}
@@ -363,6 +411,22 @@ export function BudgetsClient({ userId }: { userId: string }) {
           </div>
         </div>
       )}
+
+      {/* Edit & Delete Dialogs */}
+      <EditBudgetDialog
+        budget={editingBudget}
+        open={!!editingBudget}
+        onOpenChange={(open) => { if (!open) setEditingBudget(null) }}
+        userId={userId}
+        onSuccess={fetchData}
+      />
+      <DeleteBudgetDialog
+        budget={deletingBudget}
+        open={!!deletingBudget}
+        onOpenChange={(open) => { if (!open) setDeletingBudget(null) }}
+        userId={userId}
+        onSuccess={fetchData}
+      />
     </div>
   )
 }
