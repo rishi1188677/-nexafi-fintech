@@ -40,7 +40,7 @@ const mainNav = [
   { href: '/budgets', label: 'Budgets', icon: Wallet },
   { href: '/goals', label: 'Goals', icon: Target },
   { href: '/insights', label: 'Insights', icon: LineChart },
-  { href: '/dashboard/assistant', label: 'AI Assistant', icon: Sparkles },
+  { href: '/ai-assistant', label: 'AI Assistant', icon: Sparkles },
 ]
 
 const secondaryNav = [{ href: '/settings', label: 'Settings', icon: Settings }]
