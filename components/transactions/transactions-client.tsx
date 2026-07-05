@@ -10,6 +10,9 @@ import {
   Receipt,
   RotateCcw,
   Sparkles,
+  MoreHorizontal,
+  Edit,
+  Trash,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -23,6 +26,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { AddTransactionDialog } from './add-transaction-dialog'
+import { EditTransactionDialog } from './edit-transaction-dialog'
+import { DeleteTransactionDialog } from './delete-transaction-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 import { categories, categoryList, type CategoryId } from '@/lib/data'
 import { formatINR, formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -45,6 +56,10 @@ export function TransactionsClient({ userId }: { userId: string }) {
   const [transactions, setTransactions] = React.useState<DBTransaction[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+
+  // Dialog states
+  const [editingTransaction, setEditingTransaction] = React.useState<DBTransaction | null>(null)
+  const [deletingTransaction, setDeletingTransaction] = React.useState<DBTransaction | null>(null)
 
   // Filters state
   const [search, setSearch] = React.useState('')
@@ -310,7 +325,8 @@ export function TransactionsClient({ userId }: { userId: string }) {
                   <th className="p-4">Date</th>
                   <th className="p-4">Method</th>
                   <th className="p-4">Type</th>
-                  <th className="p-4 pr-6 text-right">Amount</th>
+                  <th className="p-4 text-right">Amount</th>
+                  <th className="p-4 pr-6 text-right w-[80px]"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/40 text-sm">
@@ -377,13 +393,46 @@ export function TransactionsClient({ userId }: { userId: string }) {
                       </td>
 
                       {/* Amount */}
-                      <td className="p-4 pr-6 text-right">
+                      <td className="p-4 text-right">
                         <span className={cn(
                           "tabnum font-semibold text-base tracking-tight",
                           isIncome ? "text-primary" : "text-foreground/90"
                         )}>
                           {isIncome ? '+' : '-'}{formatINR(tx.amount)}
                         </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="p-4 pr-6 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="hover:bg-muted/40 text-muted-foreground hover:text-foreground rounded-md h-7 w-7"
+                              >
+                                <MoreHorizontal className="size-4" />
+                              </Button>
+                            }
+                          />
+                          <DropdownMenuContent className="w-32 bg-card border border-border/80 text-foreground" align="end">
+                            <DropdownMenuItem
+                              onClick={() => setEditingTransaction(tx)}
+                              className="cursor-pointer gap-2"
+                            >
+                              <Edit className="size-3.5 text-muted-foreground" />
+                              <span>Edit</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setDeletingTransaction(tx)}
+                              className="cursor-pointer gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+                            >
+                              <Trash className="size-3.5" />
+                              <span>Delete</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   )
@@ -393,6 +442,22 @@ export function TransactionsClient({ userId }: { userId: string }) {
           </div>
         )}
       </Card>
+
+      {/* Edit and Delete Dialogs */}
+      <EditTransactionDialog
+        transaction={editingTransaction}
+        open={!!editingTransaction}
+        onOpenChange={(open) => { if (!open) setEditingTransaction(null) }}
+        userId={userId}
+        onSuccess={fetchTransactions}
+      />
+      <DeleteTransactionDialog
+        transaction={deletingTransaction}
+        open={!!deletingTransaction}
+        onOpenChange={(open) => { if (!open) setDeletingTransaction(null) }}
+        userId={userId}
+        onSuccess={fetchTransactions}
+      />
     </div>
   )
 }
