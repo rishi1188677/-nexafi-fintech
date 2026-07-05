@@ -149,7 +149,7 @@ export function AppSidebar() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger render={footerContent} />
-            <DropdownMenuContent className="w-56 bg-card border border-border/80 text-foreground" align="end" side="top">
+            <DropdownMenuContent className="w-56 bg-popover border border-border text-popover-foreground p-1 shadow-xl z-50" align="end" side="top">
               <DropdownMenuItem onClick={() => router.push('/settings')} className="cursor-pointer gap-2">
                 <Settings className="size-4" />
                 <span>Settings</span>

@@ -9,6 +9,7 @@ import {
   Repeat,
   ArrowLeftRight,
   Wallet,
+  HelpCircle,
 } from 'lucide-react'
 
 export type CategoryId =
@@ -21,6 +22,7 @@ export type CategoryId =
   | 'subscriptions'
   | 'transfers'
   | 'income'
+  | 'other'
 
 export type Category = {
   id: CategoryId
@@ -50,6 +52,7 @@ export const categories: Record<CategoryId, Category> = {
   },
   transfers: { id: 'transfers', label: 'Transfers', icon: ArrowLeftRight, color: 'var(--chart-3)' },
   income: { id: 'income', label: 'Income', icon: Wallet, color: 'var(--chart-1)' },
+  other: { id: 'other', label: 'Other', icon: HelpCircle, color: 'oklch(0.6 0.05 240)' },
 }
 
 export const categoryList = Object.values(categories)

@@ -28,6 +28,7 @@ import {
 import { AddTransactionDialog } from './add-transaction-dialog'
 import { EditTransactionDialog } from './edit-transaction-dialog'
 import { DeleteTransactionDialog } from './delete-transaction-dialog'
+import { ImportCsvDialog } from './import-csv-dialog'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -149,6 +150,7 @@ export function TransactionsClient({ userId }: { userId: string }) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ImportCsvDialog userId={userId} transactions={transactions} onSuccess={fetchTransactions} />
           <AddTransactionDialog userId={userId} onSuccess={fetchTransactions} />
         </div>
       </div>

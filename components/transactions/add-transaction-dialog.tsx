@@ -230,7 +230,7 @@ export function AddTransactionDialog({ userId, onSuccess }: AddTransactionDialog
                 <SelectTrigger className="bg-muted/20 border-border/50 focus:ring-primary/40 h-10 w-full text-left">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-card border-border/80 text-foreground">
+                <SelectContent className="bg-popover border border-border text-popover-foreground p-1 shadow-xl">
                   {categoryList
                     .filter((c) => (type === 'income' ? c.id === 'income' : c.id !== 'income'))
                     .map((c) => (
@@ -249,7 +249,7 @@ export function AddTransactionDialog({ userId, onSuccess }: AddTransactionDialog
                 <SelectTrigger className="bg-muted/20 border-border/50 focus:ring-primary/40 h-10 w-full text-left">
                   <SelectValue placeholder="Select method" />
                 </SelectTrigger>
-                <SelectContent className="bg-card border-border/80 text-foreground">
+                <SelectContent className="bg-popover border border-border text-popover-foreground p-1 shadow-xl">
                   {paymentMethods.map((m) => (
                     <SelectItem key={m} value={m}>
                       {m}

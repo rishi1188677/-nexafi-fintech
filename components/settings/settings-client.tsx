@@ -220,10 +220,10 @@ export function SettingsClient({ userId }: { userId: string }) {
           <div className="grid gap-1.5 max-w-xs">
             <Label htmlFor="currency" className="text-xs font-medium text-muted-foreground">Preferred Currency</Label>
             <Select value={currency} onValueChange={(val) => setCurrency(val)}>
-              <SelectTrigger className="bg-muted/15 border-border/50 focus:ring-primary/40 h-10 text-left">
+              <SelectTrigger className="w-full bg-muted/15 border-border/50 focus:ring-primary/40 h-10 text-left">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
-              <SelectContent className="bg-card border-border/80 text-foreground">
+              <SelectContent className="bg-popover border border-border text-popover-foreground p-1 shadow-xl">
                 <SelectItem value="INR">INR (₹) — Indian Rupee</SelectItem>
                 <SelectItem value="USD" disabled>USD ($) — US Dollar (Soon)</SelectItem>
                 <SelectItem value="EUR" disabled>EUR (€) — Euro (Soon)</SelectItem>
