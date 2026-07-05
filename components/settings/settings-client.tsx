@@ -10,7 +10,13 @@ import {
   LogOut,
   CheckCircle2,
   AlertTriangle,
+  Sun,
+  Moon,
+  Laptop,
+  Sparkles,
 } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -27,6 +33,12 @@ import { useProfile, getDisplayName, getInitials } from '@/components/dashboard/
 export function SettingsClient({ userId }: { userId: string }) {
   const router = useRouter()
   const { user, profile, loading: profileLoading, updateProfile, signOut } = useProfile()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const [fullName, setFullName] = React.useState('')
   const [currency, setCurrency] = React.useState('INR')
@@ -222,6 +234,46 @@ export function SettingsClient({ userId }: { userId: string }) {
               INR is currently the fully supported display currency for transactions and dashboard charts. Additional currencies will be added in a future update.
             </p>
           </div>
+        </div>
+      </Card>
+
+      {/* Appearance Card */}
+      <Card className="border border-border/80 bg-card/90 p-6 shadow-xl backdrop-blur-sm">
+        <div className="flex items-center gap-3 border-b border-border/50 pb-4">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Sparkles className="size-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-medium text-foreground">Appearance</h2>
+            <p className="text-xs text-muted-foreground">Select how NexaFi looks on your device.</p>
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-3 gap-3 max-w-md">
+          {[
+            { id: 'light', label: 'Light', icon: Sun },
+            { id: 'dark', label: 'Dark', icon: Moon },
+            { id: 'system', label: 'System', icon: Laptop },
+          ].map((t) => {
+            const Icon = t.icon
+            const active = mounted && theme === t.id
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTheme(t.id)}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-2.5 rounded-lg border p-4 transition-all duration-150 cursor-pointer text-sm font-medium",
+                  active
+                    ? "bg-primary/10 border-primary text-foreground shadow-md shadow-primary/5"
+                    : "bg-muted/15 border-border/50 text-muted-foreground hover:text-foreground hover:bg-muted/20"
+                )}
+              >
+                <Icon className="size-5" />
+                <span>{t.label}</span>
+              </button>
+            )
+          })}
         </div>
       </Card>
 

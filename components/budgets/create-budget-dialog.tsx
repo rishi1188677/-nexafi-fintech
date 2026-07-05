@@ -192,7 +192,7 @@ export function CreateBudgetDialog({ userId, onSuccess, defaultMonth }: CreateBu
                 type="month"
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
-                className="bg-muted/20 border-border/50 focus-visible:ring-primary/40 h-10 [color-scheme:dark]"
+                className="bg-muted/20 border-border/50 focus-visible:ring-primary/40 h-10 dark:[color-scheme:dark]"
                 required
               />
             </div>

@@ -192,7 +192,7 @@ export function BudgetsClient({ userId }: { userId: string }) {
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="bg-transparent border-none p-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-medium w-[130px] [color-scheme:dark] h-7"
+              className="bg-transparent border-none p-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-medium w-[130px] dark:[color-scheme:dark] h-7"
             />
           </div>
           <CreateBudgetDialog

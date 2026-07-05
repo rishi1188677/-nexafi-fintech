@@ -39,7 +39,7 @@ const mainNav = [
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { href: '/budgets', label: 'Budgets', icon: Wallet },
   { href: '/goals', label: 'Goals', icon: Target },
-  { href: '/dashboard/insights', label: 'Insights', icon: LineChart },
+  { href: '/insights', label: 'Insights', icon: LineChart },
   { href: '/dashboard/assistant', label: 'AI Assistant', icon: Sparkles },
 ]
 

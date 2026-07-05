@@ -2,7 +2,7 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:is(.dark *));
+@variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -49,8 +49,60 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* NexaFi — premium dark fintech theme. Single dark theme, always on. */
+/* NexaFi — premium light/dark fintech theme. */
 :root {
+  color-scheme: light;
+
+  --background: oklch(0.98 0.003 250);
+  --foreground: oklch(0.15 0.01 250);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.01 250);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.01 250);
+
+  --primary: oklch(0.55 0.12 165);
+  --primary-foreground: oklch(0.99 0.005 250);
+
+  --secondary: oklch(0.96 0.005 250);
+  --secondary-foreground: oklch(0.15 0.01 250);
+
+  --muted: oklch(0.96 0.005 250);
+  --muted-foreground: oklch(0.45 0.015 250);
+
+  --accent: oklch(0.55 0.12 240);
+  --accent-foreground: oklch(0.99 0.005 250);
+
+  --success: oklch(0.55 0.12 165);
+  --destructive: oklch(0.55 0.15 25);
+
+  --border: oklch(0 0 0 / 8%);
+  --input: oklch(0 0 0 / 10%);
+  --ring: oklch(0.55 0.12 165);
+
+  --chart-1: oklch(0.55 0.12 165);
+  --chart-2: oklch(0.55 0.12 240);
+  --chart-3: oklch(0.65 0.1 290);
+  --chart-4: oklch(0.45 0.1 200);
+  --chart-5: oklch(0.7 0.09 90);
+
+  --radius: 0.65rem;
+
+  --sidebar: oklch(0.965 0.003 250);
+  --sidebar-foreground: oklch(0.2 0.01 250);
+  --sidebar-primary: oklch(0.55 0.12 165);
+  --sidebar-primary-foreground: oklch(0.99 0.005 250);
+  --sidebar-accent: oklch(0.92 0.005 250);
+  --sidebar-accent-foreground: oklch(0.15 0.01 250);
+  --sidebar-border: oklch(0 0 0 / 6%);
+  --sidebar-ring: oklch(0.55 0.12 165);
+
+  --grid-color: oklch(0 0 0 / 4%);
+  --glow-color: oklch(0.55 0.12 165 / 6%);
+}
+
+.dark {
   color-scheme: dark;
 
   --background: oklch(0.17 0.018 255);
@@ -87,8 +139,6 @@
   --chart-4: oklch(0.5 0.03 255);
   --chart-5: oklch(0.82 0.09 90);
 
-  --radius: 0.65rem;
-
   --sidebar: oklch(0.195 0.019 255);
   --sidebar-foreground: oklch(0.9 0.008 250);
   --sidebar-primary: oklch(0.74 0.13 165);
@@ -97,6 +147,9 @@
   --sidebar-accent-foreground: oklch(0.95 0.005 250);
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.74 0.13 165);
+
+  --grid-color: oklch(1 0 0 / 3.5%);
+  --glow-color: oklch(0.74 0.13 165 / 10%);
 }
 
 @layer base {
@@ -117,12 +170,12 @@
 /* Subtle grid + radial glow used across marketing surfaces */
 .bg-grid {
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 3.5%) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 3.5%) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
   background-size: 56px 56px;
 }
 
 .bg-radial-glow {
   background:
-    radial-gradient(60% 50% at 50% 0%, oklch(0.74 0.13 165 / 10%), transparent 70%);
+    radial-gradient(60% 50% at 50% 0%, var(--glow-color), transparent 70%);
 }
