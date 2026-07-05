@@ -12,6 +12,8 @@ import {
   transactions as seedTransactions,
 } from '@/lib/data'
 
+import { ProfileProvider } from './profile-context'
+
 type NewTransaction = {
   merchant: string
   description: string
@@ -121,7 +123,11 @@ export function DashboardStoreProvider({ children }: { children: React.ReactNode
     [transactions, budgets, goals, stats, addTransaction, createBudget, contribute],
   )
 
-  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
+  return (
+    <ProfileProvider>
+      <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
+    </ProfileProvider>
+  )
 }
 
 export function useDashboardStore() {

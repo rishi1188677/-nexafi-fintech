@@ -14,7 +14,7 @@ const titles: Record<string, string> = {
   '/goals': 'Goals',
   '/dashboard/insights': 'Insights',
   '/dashboard/assistant': 'AI Assistant',
-  '/dashboard/settings': 'Settings',
+  '/settings': 'Settings',
 }
 
 export function DashboardTopbar() {
