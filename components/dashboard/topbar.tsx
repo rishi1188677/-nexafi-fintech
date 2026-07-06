@@ -15,6 +15,7 @@ const titles: Record<string, string> = {
   '/budgets': 'Budgets',
   '/goals': 'Goals',
   '/recurring': 'Recurring Payments',
+  '/reports': 'Monthly Financial Report',
   '/insights': 'Insights',
   '/dashboard/insights': 'Insights',
   '/ai-assistant': 'AI Assistant',
