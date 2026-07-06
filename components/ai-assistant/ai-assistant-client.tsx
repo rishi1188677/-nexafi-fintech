@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { categoryList, type CategoryId, categories } from '@/lib/data'
 import { formatINR } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { detectRecurringPatterns, getUpcomingPayments } from '@/lib/recurring-helper'
 
 interface DBTransaction {
   id: string
@@ -391,6 +392,13 @@ export function AiAssistantClient({ userId }: { userId: string }) {
         observations.push(`Upcoming savings target: **${soonGoal.title}** (Goal: ${formatINR(soonGoal.target_amount)}, Current: ${formatINR(soonGoal.current_amount)}) by ${soonGoal.target_date}.`)
       }
 
+      // 6. Expected recurring payments in next 30 days
+      const detected = detectRecurringPatterns(transactions)
+      const upcoming = getUpcomingPayments(detected, 30)
+      if (upcoming.length > 0) {
+        observations.push(`Upcoming recurring payments: **${upcoming.length} expected bills/subscriptions** scheduled in the next 30 days.`)
+      }
+
       if (observations.length === 0) {
         return `I checked your accounts and everything looks completely healthy!\n\n**Observations:**\n- All budgets are comfortably within safe limits.\n- Savings rate is positive and cashflow is optimized.\n- No high unusual transaction spikes detected.\n\n**Action suggestions:**\n1. Review goals to increase target contributions.\n2. Start investing surplus cash systematically.\n\n*Disclaimer: This advice is for educational purposes only and does not constitute professional financial advice.*`
       }
@@ -401,7 +409,10 @@ export function AiAssistantClient({ userId }: { userId: string }) {
     // Scenario F: "Summarize my month." (Default summary)
     const categoriesStr = sortedCategories.slice(0, 2).map(c => `${c.label} (${formatINR(c.amount)})`).join(' and ')
 
-    return `Here is a high-level summary of your financial status for the month of **${currentMonth}**:\n\n**Observations:**\n- **Income vs Outflow**: Mapped **${formatINR(totalIncome)}** in income and **${formatINR(totalExpenses)}** in outflows.\n- **Net Savings**: Net cashflow is **${formatINR(netCashflow)}** with a savings rate of **${savingsRateStr}**.\n- **Top spending category**: ${categoriesStr ? `Outflows are led by ${categoriesStr}.` : 'No expenses recorded.'}\n- **Budget health**: Mapped ${activeBudgets.length} budgets. ${overBudgets.length} categories exceeded limits.\n- **Active goals**: Mapped ${activeGoals.length} savings goals in progress.\n\n**Action suggestions:**\n1. Ensure total expenses do not exceed monthly income.\n2. Keep your budget limits locked to limit discretionary spending.\n\n*Disclaimer: This advice is for educational purposes only and does not constitute professional financial advice.*`
+    const detected = detectRecurringPatterns(transactions)
+    const upcoming = getUpcomingPayments(detected, 30)
+
+    return `Here is a high-level summary of your financial status for the month of **${currentMonth}**:\n\n**Observations:**\n- **Income vs Outflow**: Mapped **${formatINR(totalIncome)}** in income and **${formatINR(totalExpenses)}** in outflows.\n- **Net Savings**: Net cashflow is **${formatINR(netCashflow)}** with a savings rate of **${savingsRateStr}**.\n- **Top spending category**: ${categoriesStr ? `Outflows are led by ${categoriesStr}.` : 'No expenses recorded.'}\n- **Budget health**: Mapped ${activeBudgets.length} budgets. ${overBudgets.length} categories exceeded limits.\n- **Active goals**: Mapped ${activeGoals.length} savings goals in progress.\n- **Recurring Schedule**: Detected **${upcoming.length} recurring items** expected in the next 30 days.\n\n**Action suggestions:**\n1. Ensure total expenses do not exceed monthly income.\n2. Keep your budget limits locked to limit discretionary spending.\n3. Head to the **Recurring** page to confirm or schedule upcoming payments.\n\n*Disclaimer: This advice is for educational purposes only and does not constitute professional financial advice.*`
   }, [transactions, budgets, goals, currentMonth])
 
   // Handle message sending

@@ -11,6 +11,7 @@ import {
   Target,
   Wallet,
   LogOut,
+  Calendar,
 } from 'lucide-react'
 import { Logo } from '@/components/logo'
 import {
@@ -39,6 +40,7 @@ const mainNav = [
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { href: '/budgets', label: 'Budgets', icon: Wallet },
   { href: '/goals', label: 'Goals', icon: Target },
+  { href: '/recurring', label: 'Recurring', icon: Calendar },
   { href: '/insights', label: 'Insights', icon: LineChart },
   { href: '/ai-assistant', label: 'AI Assistant', icon: Sparkles },
 ]

@@ -25,6 +25,7 @@ import { Progress } from '@/components/ui/progress'
 import { categories, categoryList, type CategoryId } from '@/lib/data'
 import { formatINR } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { detectRecurringPatterns, getUpcomingPayments } from '@/lib/recurring-helper'
 
 interface DBTransaction {
   id: string
@@ -67,6 +68,29 @@ export function InsightsClient({ userId }: { userId: string }) {
   const [selectedQuestion, setSelectedQuestion] = React.useState<string | null>(null)
   const [aiThinking, setAiThinking] = React.useState(false)
   const [aiResponse, setAiResponse] = React.useState<string | null>(null)
+
+  // Local preferences for recurring payments
+  const [recurringPrefs, setRecurringPrefs] = React.useState<any>({})
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storageKey = `nexafi::recurring::${userId}`
+      try {
+        const stored = localStorage.getItem(storageKey)
+        if (stored) {
+          setRecurringPrefs(JSON.parse(stored))
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }, [userId])
+
+  const recurringCount = React.useMemo(() => {
+    const detected = detectRecurringPatterns(transactions, recurringPrefs)
+    const upcoming = getUpcomingPayments(detected, 30)
+    return upcoming.length
+  }, [transactions, recurringPrefs])
 
   // Fetch all user records
   const fetchAllData = React.useCallback(async () => {
@@ -497,13 +521,25 @@ export function InsightsClient({ userId }: { userId: string }) {
               </Card>
 
               {/* Top Spending Category */}
-              <Card className="border border-border/80 bg-card/90 p-5 shadow-sm backdrop-blur-sm relative overflow-hidden sm:col-span-2">
+              <Card className="border border-border/80 bg-card/90 p-5 shadow-sm backdrop-blur-sm relative overflow-hidden">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Top Spending Category</span>
                 <span className="text-xl font-bold tracking-tight text-foreground block mt-2 truncate">
                   {analytics.topCategoryLabel}
                 </span>
                 <span className="text-[10px] text-muted-foreground block mt-1">
                   Amount spent: {formatINR(analytics.topCategoryAmount)}
+                </span>
+              </Card>
+
+              {/* Recurring Payments expected */}
+              <Card className="border border-border/80 bg-card/90 p-5 shadow-sm backdrop-blur-sm relative overflow-hidden">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Recurring Payments</span>
+                <span className="tabnum text-2xl font-bold tracking-tight text-foreground block mt-2">
+                  {recurringCount} expected
+                </span>
+                <span className="text-[10px] text-muted-foreground flex items-center mt-1">
+                  <Calendar className="size-3 text-primary mr-0.5" />
+                  Expected in next 30 days
                 </span>
               </Card>
             </div>
