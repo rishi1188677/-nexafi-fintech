@@ -416,7 +416,7 @@ export function AiAssistantClient({ userId }: { userId: string }) {
   }, [transactions, budgets, goals, currentMonth])
 
   // Handle message sending
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string) => {
     if (!text.trim()) return
 
     const newMsg: Message = {
@@ -429,8 +429,51 @@ export function AiAssistantClient({ userId }: { userId: string }) {
     setInputVal('')
     setTyping(true)
 
-    // Simulate animated coach thinking delay
-    setTimeout(() => {
+    try {
+      // Load local storage preferences for recurring items context
+      let prefs = {}
+      if (typeof window !== 'undefined') {
+        const storageKey = `nexafi::recurring::${userId}`
+        try {
+          const stored = localStorage.getItem(storageKey)
+          if (stored) {
+            prefs = JSON.parse(stored)
+          }
+        } catch (err) {
+          console.error('Error fetching recurring local preferences:', err)
+        }
+      }
+
+      const detected = detectRecurringPatterns(transactions, prefs)
+
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          question: text,
+          recurringItems: detected
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('API server returned error status.')
+      }
+
+      const resData = await response.json()
+      if (resData.error || !resData.answer) {
+        throw new Error(resData.error || 'No answer returned.')
+      }
+
+      const coachMsg: Message = {
+        role: 'assistant',
+        content: resData.answer,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setMessages(prev => [...prev, coachMsg])
+    } catch (err) {
+      console.warn('Gemini Assistant integration failed, falling back to rule-based analysis engine:', err)
       const responseContent = generateResponse(text)
       const coachMsg: Message = {
         role: 'assistant',
@@ -438,8 +481,9 @@ export function AiAssistantClient({ userId }: { userId: string }) {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
       setMessages(prev => [...prev, coachMsg])
+    } finally {
       setTyping(false)
-    }, 850)
+    }
   }
 
   // Elite Redesigned Workspace layout
