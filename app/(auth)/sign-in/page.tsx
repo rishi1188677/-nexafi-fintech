@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { AuthForm } from '@/components/auth/auth-form'
+import { UnlockExperience } from '@/components/experience/unlock-experience'
 
 export const metadata: Metadata = {
   title: 'Sign in — NexaFi',
@@ -9,8 +10,10 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <Suspense>
-      <AuthForm mode="sign-in" />
-    </Suspense>
+    <UnlockExperience>
+      <Suspense>
+        <AuthForm mode="sign-in" />
+      </Suspense>
+    </UnlockExperience>
   )
 }

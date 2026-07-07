@@ -31,6 +31,7 @@ import { categories, type CategoryId, type Insight } from '@/lib/data'
 import { formatINR, formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { DailyBriefingWidget } from './daily-briefing-card'
+import { NexaFiUnlockRitual } from '@/components/experience/nexafi-unlock-ritual'
 
 interface DBTransaction {
   id: string
@@ -74,6 +75,23 @@ export function DashboardClient({ userId }: { userId: string }) {
   const [goals, setGoals] = React.useState<DBGoal[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+  const [showRitual, setShowRitual] = React.useState(false)
+
+  React.useEffect(() => {
+    if (!loading) {
+      const stored = localStorage.getItem('nexafi::ritual::completed')
+      if (stored) {
+        try {
+          const { timestamp } = JSON.parse(stored)
+          const oneDay = 24 * 60 * 60 * 1000
+          if (Date.now() - timestamp < oneDay) {
+            return
+          }
+        } catch (e) {}
+      }
+      setShowRitual(true)
+    }
+  }, [loading])
 
   const fetchData = React.useCallback(async () => {
     setLoading(true)
@@ -347,6 +365,9 @@ export function DashboardClient({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-6">
+      {showRitual && (
+        <NexaFiUnlockRitual onComplete={() => setShowRitual(false)} />
+      )}
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>

@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { CsvMoneyFlow } from '@/components/experience/csv-money-flow'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -1311,11 +1312,18 @@ export function ImportCsvDialog({ userId, transactions, onSuccess }: ImportCsvDi
 
         {/* Step 4: Importing loader */}
         {step === 'importing' && (
-          <div className="py-14 flex flex-col items-center justify-center gap-4">
-            <Loader2 className="size-8 text-primary animate-spin" />
-            <div className="w-full max-w-xs space-y-2">
+          <div className="py-6 flex flex-col items-center justify-center">
+            <CsvMoneyFlow
+              progress={progress}
+              fileName={fileName}
+              totalRows={rawRows.length}
+            />
+            <div className="w-full max-w-sm px-6 mt-4">
+              <div className="flex justify-between items-center text-[10px] text-muted-foreground font-semibold mb-1">
+                <span>Saving to Supabase Database</span>
+                <span>{progress}%</span>
+              </div>
               <Progress value={progress} className="h-1.5" />
-              <p className="text-xs text-center text-muted-foreground font-semibold">Bulk inserting statement transactions... {progress}%</p>
             </div>
           </div>
         )}

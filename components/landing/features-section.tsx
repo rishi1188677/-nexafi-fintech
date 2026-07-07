@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import {
   Brain,
   CalendarClock,
@@ -14,6 +14,12 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+  sectionHeader,
+  staggerContainer,
+  featureCardReveal,
+  VIEWPORT_MARGIN,
+} from '@/lib/motion'
 
 interface Feature {
   icon: LucideIcon
@@ -92,18 +98,20 @@ const features: Feature[] = [
 ]
 
 export function FeaturesSection() {
+  const shouldReduce = useReducedMotion()
+
   return (
     <section className="relative border-b border-border/60 bg-background">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-30" />
       <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
 
-        {/* Header */}
+        {/* Header — NMS sectionHeader variant */}
         <motion.div
           className="mx-auto mb-12 max-w-2xl text-center"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          variants={shouldReduce ? undefined : sectionHeader}
+          initial={shouldReduce ? undefined : 'hidden'}
+          whileInView={shouldReduce ? undefined : 'visible'}
+          viewport={{ once: true, margin: VIEWPORT_MARGIN }}
         >
           <span className="text-xs font-semibold uppercase tracking-widest text-primary">
             Feature set
@@ -116,15 +124,18 @@ export function FeaturesSection() {
           </p>
         </motion.div>
 
-        {/* Feature grid */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
+        {/* Feature grid — NMS staggerContainer + featureCardReveal */}
+        <motion.div
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          variants={shouldReduce ? undefined : staggerContainer}
+          initial={shouldReduce ? undefined : 'hidden'}
+          whileInView={shouldReduce ? undefined : 'visible'}
+          viewport={{ once: true, margin: '-60px' }}
+        >
+          {features.map((f) => (
             <motion.div
               key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.5, delay: (i % 3) * 0.05, ease: [0.22, 1, 0.36, 1] }}
+              variants={shouldReduce ? undefined : featureCardReveal}
             >
               <div className="group relative h-full overflow-hidden rounded-xl border border-border/70 bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5">
                 {/* Subtle hover glow */}
@@ -150,7 +161,7 @@ export function FeaturesSection() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
