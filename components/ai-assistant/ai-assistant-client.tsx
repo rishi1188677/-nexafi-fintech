@@ -62,6 +62,7 @@ interface Message {
   role: 'user' | 'assistant'
   content: string
   timestamp: string
+  toolUsed?: string
 }
 
 const SUGGESTED_PROMPTS = [
@@ -469,7 +470,8 @@ export function AiAssistantClient({ userId }: { userId: string }) {
       const coachMsg: Message = {
         role: 'assistant',
         content: resData.answer,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        toolUsed: resData.toolUsed
       }
       setMessages(prev => [...prev, coachMsg])
     } catch (err) {
@@ -478,7 +480,8 @@ export function AiAssistantClient({ userId }: { userId: string }) {
       const coachMsg: Message = {
         role: 'assistant',
         content: responseContent,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        toolUsed: 'Rule-Based Engine (Fallback)'
       }
       setMessages(prev => [...prev, coachMsg])
     } finally {
@@ -632,9 +635,16 @@ export function AiAssistantClient({ userId }: { userId: string }) {
                             )}
                           </div>
 
-                          {/* Copy button */}
-                          {idx > 0 && (
-                            <div className="mt-4 flex justify-end shrink-0">
+                          {/* Copy button & Tool Badge */}
+                          <div className="mt-4 flex justify-between items-center shrink-0">
+                            {m.toolUsed ? (
+                              <span className="text-[10px] font-semibold text-muted-foreground/80 bg-muted/40 border border-border/40 px-2 py-0.5 rounded leading-none">
+                                Analyzed using: <strong className="text-foreground">{m.toolUsed}</strong>
+                              </span>
+                            ) : (
+                              <div />
+                            )}
+                            {idx > 0 && (
                               <button
                                 onClick={() => handleCopyText(m.content, idx)}
                                 className="text-muted-foreground hover:text-foreground p-1.5 rounded-md bg-muted/40 hover:bg-muted transition-colors border border-border/20 flex items-center gap-1.5"
@@ -652,8 +662,8 @@ export function AiAssistantClient({ userId }: { userId: string }) {
                                   </>
                                 )}
                               </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       ) : (
                         // User prompt rendered as a clean tag pill

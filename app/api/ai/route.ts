@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { categories, type CategoryId } from '@/lib/data'
 import { formatINR } from '@/lib/format'
+import { routeIntent } from '@/lib/ai/intent-router'
 
 export async function POST(request: Request) {
   try {
@@ -39,8 +39,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Gemini API key is not configured.' }, { status: 500 })
     }
 
-    // 5. Build compact financial context
+    // 5. Run Intent router and deterministic math tools
     const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM
+
+    const { intent, toolResult } = routeIntent(
+      question,
+      transactions,
+      budgets,
+      goals,
+      recurringItems,
+      currentMonth
+    )
+
+    // Calculate baseline summary context metrics for helper context
     const currentMonthTxs = transactions.filter(t => t.transaction_date.slice(0, 7) === currentMonth)
     const incomeTxs = currentMonthTxs.filter(t => t.transaction_type === 'income')
     const expenseTxs = currentMonthTxs.filter(t => t.transaction_type === 'expense')
@@ -50,59 +61,27 @@ export async function POST(request: Request) {
     const netCashflow = totalIncome - totalExpenses
     const savingsRate = totalIncome > 0 ? Math.round((netCashflow / totalIncome) * 100) : 0
 
-    // Category breakdown
-    const categoryTotals: Record<string, number> = {}
-    expenseTxs.forEach(t => {
-      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Math.abs(t.amount)
-    })
-    const categoryDetails = Object.entries(categoryTotals)
-      .map(([cat, amt]) => `${categories[cat as CategoryId]?.label || cat}: ${formatINR(amt)}`)
-      .join(', ')
-
-    // Budgets breakdown
-    const budgetDetails = budgets
-      .filter(b => b.month.slice(0, 7) === currentMonth)
-      .map(b => {
-        const spent = transactions
-          .filter(t => t.category === b.category && t.transaction_type === 'expense' && t.transaction_date.slice(0, 7) === currentMonth)
-          .reduce((sum, t) => sum + Math.abs(t.amount), 0)
-        return `- ${categories[b.category as CategoryId]?.label || b.category}: Budget ${formatINR(b.budget_amount)}, Spent ${formatINR(spent)} (${b.budget_amount > 0 ? Math.round((spent / b.budget_amount) * 100) : 0}%)`
-      })
-      .join('\n')
-
-    // Goals breakdown
-    const goalDetails = goals
-      .map(g => `- ${g.title}: Target ${formatINR(g.target_amount)}, Saved ${formatINR(g.current_amount)} (${g.target_amount > 0 ? Math.round((g.current_amount / g.target_amount) * 100) : 0}%), Monthly Target: ${formatINR(g.monthly_contribution)}`)
-      .join('\n')
-
-    // Recurring items
-    const recurringDetails = recurringItems
-      .filter((item: any) => item.status === 'active')
-      .map((item: any) => `- ${item.merchant} (${item.frequency}): ${formatINR(item.amount)} [Next expected: ${item.estimated_next}]`)
-      .join('\n')
-
-    // Construct prompt
+    // Construct prompt with deterministic facts
     const promptText = `You are the NexaFi AI Financial Coach, a premium personal finance assistant.
-Analyze the user's financial context below and answer their question.
+Analyze the user's financial context below and answer their question using the computed facts.
 
-USER FINANCIAL CONTEXT:
+USER FINANCIAL CONTEXT SUMMARY:
 - Current Month: ${currentMonth}
-- Monthly Income: ${formatINR(totalIncome)}
-- Monthly Expenses: ${formatINR(totalExpenses)}
-- Net Cashflow: ${formatINR(netCashflow)}
+- Total Monthly Income: ${formatINR(totalIncome)}
+- Total Monthly Expenses: ${formatINR(totalExpenses)}
 - Savings Rate: ${savingsRate}%
-- Expenses by Category: ${categoryDetails || 'None'}
 
-ACTIVE BUDGET CONSTRAINTS:
-${budgetDetails || 'No budgets configured for this month.'}
-
-ACTIVE SAVINGS TARGETS (GOALS):
-${goalDetails || 'No savings goals set.'}
-
-SCHEDULED RECURRING BILLS & UTILITIES:
-${recurringDetails || 'No recurring subscriptions mapped.'}
+DETERMINISTIC FACTS CALCULATED BY INTERNAL TOOLS:
+Tool Used: ${toolResult.toolName}
+Facts:
+${toolResult.formattedFacts}
 
 USER QUESTION: "${question}"
+
+SAFETY CONSTRAINTS:
+- Do NOT recommend specific stocks, crypto tokens, mutual funds, or tax/legal advice. Keep recommendations educational and focused on savings, budgets, and cash flow structures.
+- Do NOT hallucinate any unsupported numbers; rely strictly on the calculated facts above.
+- If the calculated facts do not contain enough information, explain what context is missing.
 
 RESPONSE FORMAT INSTRUCTIONS (CRITICAL):
 You MUST format your output exactly in the following structured layout. Use plain sentences, and bold keywords only using double asterisks (**bold**). Do not use markdown headers (# or ##) or inline code blocks.
@@ -156,7 +135,10 @@ This advice is for educational purposes only and does not constitute professiona
       throw new Error('Malformed response from Gemini API.')
     }
 
-    return NextResponse.json({ answer: rawAnswer })
+    return NextResponse.json({
+      answer: rawAnswer,
+      toolUsed: toolResult.toolName
+    })
   } catch (err: any) {
     console.error('Server error inside AI API route:', err)
     return NextResponse.json({ error: err?.message || 'Server error' }, { status: 500 })
