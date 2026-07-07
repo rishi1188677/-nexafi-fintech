@@ -13,6 +13,7 @@ import {
   LogOut,
   Calendar,
   FileText,
+  Sun,
 } from 'lucide-react'
 import { Logo } from '@/components/logo'
 import {
@@ -38,6 +39,7 @@ import { useProfile, getDisplayName, getInitials } from './profile-context'
 
 const mainNav = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/briefing', label: 'Daily Briefing', icon: Sun },
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { href: '/budgets', label: 'Budgets', icon: Wallet },
   { href: '/goals', label: 'Goals', icon: Target },

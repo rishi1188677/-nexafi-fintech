@@ -30,6 +30,7 @@ import { InsightList } from './insight-list'
 import { categories, type CategoryId, type Insight } from '@/lib/data'
 import { formatINR, formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { DailyBriefingWidget } from './daily-briefing-card'
 
 interface DBTransaction {
   id: string
@@ -389,6 +390,9 @@ export function DashboardClient({ userId }: { userId: string }) {
           hint="Income saved this month"
         />
       </div>
+
+      {/* Daily AI Briefing Widget */}
+      <DailyBriefingWidget />
 
       {/* Charts & Health Score Row */}
       <div className="grid gap-6 md:grid-cols-3">
