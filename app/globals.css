@@ -179,3 +179,94 @@
   background:
     radial-gradient(60% 50% at 50% 0%, var(--glow-color), transparent 70%);
 }
+
+/* Landing page scroll-reveal animation helper */
+@keyframes landing-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: landing-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Gradient text support */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Chart color utilities for inline styles */
+.bg-chart-1 { background-color: var(--chart-1); }
+.bg-chart-2 { background-color: var(--chart-2); }
+.bg-chart-3 { background-color: var(--chart-3); }
+
+/* ─── Cinematic landing page enhancements ──────────────────────────────────── */
+
+/* Slow ambient float — used by hero orbs */
+@keyframes ambient-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-18px) scale(1.03); }
+}
+.animate-ambient-float {
+  animation: ambient-float 10s ease-in-out infinite;
+}
+
+/* Pulsing glow ring */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.7; }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Subtle shimmer for skeleton/loading states */
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+.animate-shimmer {
+  background: linear-gradient(
+    105deg,
+    var(--muted) 40%,
+    color-mix(in oklch, var(--muted), white 15%) 50%,
+    var(--muted) 60%
+  );
+  background-size: 200% auto;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Glass card surface */
+.glass-card {
+  background: color-mix(in oklch, var(--card) 85%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+}
+
+/* Premium CTA button glow trail */
+.btn-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--primary) 30%, transparent),
+    0 4px 24px color-mix(in oklch, var(--primary) 25%, transparent);
+  transition: box-shadow 0.3s ease;
+}
+.btn-glow:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--primary) 50%, transparent),
+    0 6px 32px color-mix(in oklch, var(--primary) 40%, transparent);
+}
+
+/* Gradient horizontal divider */
+.gradient-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border),
+    transparent
+  );
+}
